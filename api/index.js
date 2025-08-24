@@ -7,23 +7,20 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors()); // biar bisa diakses frontend
-app.use(express.json()); // parsing body JSON
+app.use(cors());
+app.use(express.json());
 
-// --- SECURITY: API KEY Middleware ---
-const API_KEY = process.env.API_KEY || "secret123"; // bisa taruh di vercel env
+// --- SECURITY: API KEY via query string ---
+const API_KEY = process.env.API_KEY || "secret123";
 
 function checkApiKey(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  if (!authHeader) {
+  const token = req.query.apikey; // ambil dari URL
+  if (!token) {
     return res.status(401).json({ error: "No API key provided" });
   }
-
-  const token = authHeader.replace("Bearer ", "");
   if (token !== API_KEY) {
     return res.status(403).json({ error: "Invalid API key" });
   }
-
   next();
 }
 
@@ -47,7 +44,7 @@ app.get("/users", checkApiKey, (req, res) => {
   res.json(data);
 });
 
-// POST login (validate username & password)
+// POST login (return API key)
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -66,11 +63,10 @@ app.post("/login", (req, res) => {
     return res.status(401).json({ error: "Invalid credentials" });
   }
 
-  // sukses login → kasih API Key
   res.json({ message: "Login successful", apiKey: API_KEY });
 });
 
-// POST register user (validate input)
+// POST register
 app.post("/register", (req, res) => {
   const newUser = req.body;
 
@@ -92,10 +88,11 @@ app.post("/register", (req, res) => {
   res.status(201).json({ message: "User registered successfully" });
 });
 
-// Start server (local only, vercel pakai export default)
+// Start server (local)
 if (process.env.NODE_ENV !== "production") {
-  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+  app.listen(PORT, () =>
+    console.log(`Server running on http://localhost:${PORT}`)
+  );
 }
 
-// Export for Vercel
 export default app;
