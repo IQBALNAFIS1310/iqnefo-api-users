@@ -16,10 +16,10 @@ const API_KEY = process.env.API_KEY || "secret123";
 function checkApiKey(req, res, next) {
   const token = req.query.apikey; // ambil dari URL
   if (!token) {
-    return res.status(401).json({ error: "No API key provided" });
+    return res.status(401).json({ error: "UPS!! Kamu Akses Tanpa Izin Iqbal nich!!!" });
   }
   if (token !== API_KEY) {
-    return res.status(403).json({ error: "Invalid API key" });
+    return res.status(403).json({ error: "Nah kan Kamu mencoba Akses Datanya" });
   }
   next();
 }
