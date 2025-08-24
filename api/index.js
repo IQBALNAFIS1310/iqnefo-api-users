@@ -60,7 +60,8 @@ app.post("/login", (req, res) => {
   }
 
   const filePath = path.join(process.cwd(), "data", "users.json");
-  const users = JSON.parse(fs.readFileSync(filePath));
+  const data = JSON.parse(fs.readFileSync(filePath)); // Ambil objek JSON
+  const users = data.users; // Ambil array users dari objek JSON
 
   const user = users.find(
     (u) => u.username === username && u.password === password
@@ -83,17 +84,19 @@ app.post("/register", (req, res) => {
   }
 
   const filePath = path.join(process.cwd(), "data", "users.json");
-  const users = JSON.parse(fs.readFileSync(filePath));
+  const data = JSON.parse(fs.readFileSync(filePath)); // Ambil objek JSON
+  const users = data.users; // Ambil array users dari objek JSON
 
   if (users.find((u) => u.username === newUser.username)) {
     return res.status(409).json({ error: "Username already exists" });
   }
 
-  users.push(newUser);
-  fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
+  users.push(newUser); // Tambahkan user baru
+  fs.writeFileSync(filePath, JSON.stringify({ users }, null, 2)); // Simpan ulang sebagai objek
 
   res.status(201).json({ message: "User registered successfully" });
 });
+
 
 // Start server (local)
 if (process.env.NODE_ENV !== "production") {
