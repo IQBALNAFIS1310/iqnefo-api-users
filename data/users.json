@@ -13,6 +13,19 @@
       "password": "admin123",
       "email": "admin@example.com",
       "name": "Admin User"
+    },
+    {
+      "username": "iqballllll",
+      "password": "1234",
+      "email": "iqbal@example.com",
+      "name": "Iqbal Nafis"
+    },
+    {
+      "id": 1756040596004,
+      "username": "sinafis",
+      "password": "123123123",
+      "email": "sinafis@gmail.com",
+      "name": "iqbal nafis"
     }
   ]
 }
