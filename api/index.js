@@ -37,6 +37,13 @@ function validateUser(user) {
 
 // --- ROUTES ---
 
+// Welcome route
+app.get("/", (req, res) => {
+  res.json({
+    message: "Halo 👋, ini adalah bagian dari project React saya. API ini digunakan untuk mengelola data user dengan fitur register, login, dan proteksi menggunakan API Key. Jika kamu melihat pesan ini berarti server berhasil berjalan dengan baik di Vercel 🚀"
+  });
+});
+
 // GET all users (protected)
 app.get("/users", checkApiKey, (req, res) => {
   const filePath = path.join(process.cwd(), "data", "users.json");
