@@ -4,6 +4,7 @@ import path from "path";
 import cors from "cors";
 
 const app = express();
+// const PORT = 25965;
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -40,7 +41,12 @@ function validateUser(user) {
 // Welcome route
 app.get("/", (req, res) => {
   res.json({
-    message: "Halo 👋, ini adalah bagian dari project React saya. API ini digunakan untuk mengelola data user dengan fitur register, login, dan proteksi menggunakan API Key. Jika kamu melihat pesan ini berarti server berhasil berjalan dengan baik di Vercel 🚀"
+    message: "Halo 👋, ini adalah bagian dari project React saya.\nAPI ini digunakan untuk mengelola data user dengan fitur register, login, dan proteksi menggunakan API Key.\nJika kamu melihat pesan ini berarti Kamu telah mengakses API Saya!",
+    endpoints: {
+      "POST /register": "Register user baru",
+      "POST /login": "Login user, mengembalikan API Key",
+      "GET /users?apikey=your_api_key": "Ambil semua user (wajib API Key)"
+    }
   });
 });
 
