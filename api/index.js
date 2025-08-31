@@ -45,7 +45,8 @@ app.get("/", (req, res) => {
     endpoints: {
       "POST /register": "Register user baru",
       "POST /login": "Login user, mengembalikan API Key",
-      "GET /users?apikey=your_api_key": "Ambil semua user (wajib API Key)"
+      "GET /users?apikey=your_api_key": "Ambil semua user (wajib API Key)",
+      "GET /movie?apikey=your_api_key" : "Untuk Mengambil Data Movie (wajib API Key)"
     }
   });
 });
@@ -57,7 +58,7 @@ app.get("/users", checkApiKey, (req, res) => {
   res.json(data);
 });
 
-// POST login (return API key)
+// POST login (return user info + apiKey jika perlu)
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -66,19 +67,26 @@ app.post("/login", (req, res) => {
   }
 
   const filePath = path.join(process.cwd(), "data", "users.json");
-  const data = JSON.parse(fs.readFileSync(filePath)); // Ambil objek JSON
-  const users = data.users; // Ambil array users dari objek JSON
+  const data = JSON.parse(fs.readFileSync(filePath)); 
+  const users = data.users;
 
   const user = users.find(
     (u) => u.username === username && u.password === password
   );
 
   if (!user) {
-    return res.status(401).json({ error: "Invalid credentials" });
+    return res.status(401).json({ error: "Login Gagal" });
   }
 
-  res.json({ message: "Login successful", apiKey: API_KEY });
+  // Ambil hanya field yang diperlukan
+  const { id, name, username: uname, email } = user;
+
+  res.json({
+    message: "Login successful",
+    user: { id, name, username: uname, email }
+  });
 });
+
 
 // POST register
 app.post("/register", (req, res) => {
@@ -94,15 +102,22 @@ app.post("/register", (req, res) => {
   const users = data.users; // Ambil array users dari objek JSON
 
   if (users.find((u) => u.username === newUser.username)) {
-    return res.status(409).json({ error: "Username already exists" });
+    return res.status(409).json({ error: "Gunakan Username Lain:)" });
   }
 
   users.push(newUser); // Tambahkan user baru
   fs.writeFileSync(filePath, JSON.stringify({ users }, null, 2)); // Simpan ulang sebagai objek
 
-  res.status(201).json({ message: "User registered successfully" });
+  res.status(201).json({ message: "Registrasi Berhasil:V" });
 });
 
+// MOVIE LIST
+
+app.get("/movie", checkApiKey, (req, res) => {
+  const filePath = path.join(process.cwd(), "data", "movie.json");
+  const data = JSON.parse(fs.readFileSync(filePath));
+  res.json(data);
+});
 
 // Start server (local)
 if (process.env.NODE_ENV !== "production") {
