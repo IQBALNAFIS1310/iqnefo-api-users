@@ -3,36 +3,9 @@
     {
       "id": 1,
       "username": "iqbal",
-      "password": "123456",
-      "email": "iqbal@example.com",
+      "password": "1310",
+      "email": "iqbal@google.com",
       "name": "Iqbal Nafis"
-    },
-    {
-      "id": 2,
-      "username": "admin",
-      "password": "admin123",
-      "email": "admin@example.com",
-      "name": "Admin User"
-    },
-    {
-      "username": "iqballllll",
-      "password": "1234",
-      "email": "iqbal@example.com",
-      "name": "Iqbal Nafis"
-    },
-    {
-      "id": 1756040596004,
-      "username": "sinafis",
-      "password": "123123123",
-      "email": "sinafis@gmail.com",
-      "name": "iqbal nafis"
-    },
-    {
-      "id": 1756624335202,
-      "username": "afi",
-      "password": "poipoi098",
-      "email": "naufal1rizky2@gmail.com",
-      "name": "asdfghjkl"
     }
   ]
 }
