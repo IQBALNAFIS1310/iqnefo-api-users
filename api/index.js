@@ -4,8 +4,8 @@ import path from "path";
 import cors from "cors";
 
 const app = express();
-// const PORT = 25965;
-const PORT = process.env.PORT || 3000;
+const PORT = 25586;
+// const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -46,7 +46,7 @@ app.get("/", (req, res) => {
       "POST /register": "Register user baru",
       "POST /login": "Login user, mengembalikan API Key",
       "GET /users?apikey=your_api_key": "Ambil semua user (wajib API Key)",
-      "GET /movie?apikey=your_api_key" : "Untuk Mengambil Data Movie (wajib API Key)"
+      "GET /movie?apikey=your_api_key": "Untuk Mengambil Data Movie (wajib API Key)"
     }
   });
 });
@@ -67,7 +67,7 @@ app.post("/login", (req, res) => {
   }
 
   const filePath = path.join(process.cwd(), "data", "users.json");
-  const data = JSON.parse(fs.readFileSync(filePath)); 
+  const data = JSON.parse(fs.readFileSync(filePath));
   const users = data.users;
 
   const user = users.find(
@@ -109,6 +109,58 @@ app.post("/register", (req, res) => {
   fs.writeFileSync(filePath, JSON.stringify({ users }, null, 2)); // Simpan ulang sebagai objek
 
   res.status(201).json({ message: "Registrasi Berhasil:V" });
+});
+
+
+// GET user by ID (protected)
+app.get("/users/:id", checkApiKey, (req, res) => {
+  const filePath = path.join(process.cwd(), "data", "users.json");
+  const data = JSON.parse(fs.readFileSync(filePath));
+  const users = data.users;
+
+  const user = users.find((u) => u.id === parseInt(req.params.id));
+  if (!user) {
+    return res.status(404).json({ error: "User tidak ditemukan" });
+  }
+
+  res.json(user);
+});
+
+// PUT update user (protected)
+app.put("/users/:id", checkApiKey, (req, res) => {
+  const { id } = req.params;
+  const filePath = path.join(process.cwd(), "data", "users.json");
+  const data = JSON.parse(fs.readFileSync(filePath));
+  const users = data.users;
+
+  const index = users.findIndex((u) => u.id === parseInt(id));
+  if (index === -1) {
+    return res.status(404).json({ error: "User tidak ditemukan" });
+  }
+
+  // update field yang ada (kecuali password kalau tidak dikirim)
+  users[index] = { ...users[index], ...req.body };
+
+  fs.writeFileSync(filePath, JSON.stringify({ users }, null, 2));
+  res.json({ message: "User berhasil diperbarui", user: users[index] });
+});
+
+// DELETE user (protected)
+app.delete("/users/:id", checkApiKey, (req, res) => {
+  const { id } = req.params;
+  const filePath = path.join(process.cwd(), "data", "users.json");
+  const data = JSON.parse(fs.readFileSync(filePath));
+  const users = data.users;
+
+  const index = users.findIndex((u) => u.id === parseInt(id));
+  if (index === -1) {
+    return res.status(404).json({ error: "User tidak ditemukan" });
+  }
+
+  const deletedUser = users.splice(index, 1)[0];
+  fs.writeFileSync(filePath, JSON.stringify({ users }, null, 2));
+
+  res.json({ message: "User berhasil dihapus", user: deletedUser });
 });
 
 // MOVIE LIST
