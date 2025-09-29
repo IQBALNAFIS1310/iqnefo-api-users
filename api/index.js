@@ -1,41 +1,19 @@
 import express from "express";
 import cors from "cors";
-import { createClient } from "@supabase/supabase-js";
-import bcrypt from "bcrypt";
+import authRoutes from "./routes/auth.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- Supabase Config ---
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 // --- Routes ---
-app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+app.use("/auth", authRoutes);
 
-  const { data: users, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("username", username)
-    .limit(1);
+// ✅ Untuk lokal dev
+if (process.env.NODE_ENV !== "production") {
+  app.listen(3000, () => console.log("Server running at http://localhost:3000"));
+}
 
-  if (error) return res.status(500).json({ error: error.message });
-  if (!users || users.length === 0)
-    return res.status(404).json({ error: "User tidak ditemukan" });
-
-  const user = users[0];
-
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(401).json({ error: "Password salah" });
-
-  res.json({
-    message: "Login sukses",
-    user: { id: user.id, username: user.username, email: user.email, name: user.name }
-  });
-});
-
-// ✅ Export untuk Vercel (bukan app.listen)
+// ✅ Untuk Vercel
 export default app;
+  

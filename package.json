@@ -4,11 +4,13 @@
   "type": "module",
   "main": "api/index.js",
   "scripts": {
-    "dev": "node api/index.js"
+    "dev": "node api/index.js",
+    "start": "node api/index.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.58.0",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
     "express": "^5.1.0"
   },
   "devDependencies": {
