@@ -4,6 +4,7 @@ import { supabase } from "../utils/supabase.js";
 
 const router = express.Router();
 
+
 // --- REGISTER ---
 router.post("/register", async (req, res) => {
   const { username, email, password, name } = req.body;
@@ -39,6 +40,7 @@ router.post("/register", async (req, res) => {
   });
 });
 
+
 // --- LOGIN ---
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -68,5 +70,60 @@ router.post("/login", async (req, res) => {
     user: { id: user.id, username: user.username, email: user.email, name: user.name },
   });
 });
+
+
+// --- GET USER BY ID ---
+router.get("/users/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const { data, error } = await supabase
+    .from("users")
+    .select("id, username, email, name")
+    .eq("id", id)
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  if (!data) return res.status(404).json({ error: "User tidak ditemukan" });
+
+  res.json(data);
+});
+
+
+// --- UPDATE USER ---
+router.put("/users/:id", async (req, res) => {
+  const { id } = req.params;
+  const { username, email, name, password } = req.body;
+
+  let updateData = { username, email, name };
+
+  if (password) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    updateData.password = hashedPassword;
+  }
+
+  const { data, error } = await supabase
+    .from("users")
+    .update(updateData)
+    .eq("id", id)
+    .select();
+
+  if (error) return res.status(500).json({ error: error.message });
+  if (!data || data.length === 0) return res.status(404).json({ error: "User tidak ditemukan" });
+
+  res.json({ message: "Update sukses", user: data[0] });
+});
+
+
+// --- DELETE USER ---
+router.delete("/users/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const { error } = await supabase.from("users").delete().eq("id", id);
+
+  if (error) return res.status(500).json({ error: error.message });
+
+  res.json({ message: "User berhasil dihapus" });
+});
+
 
 export default router;
